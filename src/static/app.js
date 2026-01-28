@@ -8,6 +8,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const activityInput = document.getElementById("activity");
   const closeRegistrationModal = document.querySelector(".close-modal");
 
+  // Announcement banner elements
+  const announcementBanner = document.getElementById("announcement-banner");
+  const announcementText = document.getElementById("announcement-text");
+  const closeAnnouncementBtn = document.getElementById("close-announcement");
+
   // Search and filter elements
   const searchInput = document.getElementById("activity-search");
   const searchButton = document.getElementById("search-button");
@@ -811,6 +816,34 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 5000);
   }
 
+  // Load announcement banner
+  async function loadAnnouncement() {
+    try {
+      const response = await fetch("/announcements");
+      if (response.ok) {
+        const data = await response.json();
+        if (data.message) {
+          displayAnnouncement(data.message);
+        }
+      } else {
+        console.warn("Failed to load announcement: HTTP", response.status);
+      }
+    } catch (error) {
+      console.error("Error loading announcement:", error);
+    }
+  }
+
+  // Display announcement banner
+  function displayAnnouncement(message) {
+    announcementText.textContent = message;
+    announcementBanner.classList.remove("hidden");
+  }
+
+  // Close announcement banner
+  function closeAnnouncement() {
+    announcementBanner.classList.add("hidden");
+  }
+
   // Handle form submission
   signupForm.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -861,8 +894,12 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeRangeFilter,
   };
 
+  // Event listener for closing announcement banner
+  closeAnnouncementBtn.addEventListener("click", closeAnnouncement);
+
   // Initialize app
   checkAuthentication();
   initializeFilters();
+  loadAnnouncement();
   fetchActivities();
 });
